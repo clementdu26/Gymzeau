@@ -1,0 +1,12 @@
+{
+  "name":"Gymzeau",
+  "short_name":"Gymzeau",
+  "description":"Ton suivi de gymnastique",
+  "start_url":"./",
+  "scope":"./",
+  "display":"standalone",
+  "background_color":"#090d18",
+  "theme_color":"#111827",
+  "orientation":"portrait",
+  "icons":[{"src":"icon-180.png","sizes":"180x180","type":"image/png","purpose":"any maskable"}]
+}

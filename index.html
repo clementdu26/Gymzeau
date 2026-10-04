@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Gymzeau">
+<link rel="apple-touch-icon" href="icon-180.png">
 <title>Gymzeau</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#090d18;color:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
@@ -89,4 +94,5 @@ function renderLogs(){let x=document.getElementById("logs");x.innerHTML=state.lo
 function renderBadges(){let b=[["🌱","Premier pas",state.xp>=10],["🤸","Gymnaste actif",state.done.length>=2],["🔥","Défi relevé",state.challenge],["⭐","100 XP",state.xp>=100],["🏆","Collectionneur",state.done.length>=6],["🚀","500 XP",state.xp>=500]];document.getElementById("badgesList").innerHTML=b.map(x=>`<div class="badge ${x[2]?'':'locked'}"><b>${x[0]} ${x[1]}</b><p class="muted">${x[2]?'Débloqué !':'Continue à t’entraîner'}</p></div>`).join("")}
 document.getElementById("timerSelect").onchange=resetTimer;resetTimer();update();
 </script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js"));}</script>
 </body></html>
