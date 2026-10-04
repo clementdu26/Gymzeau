@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<title>Gymzeau</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#090d18;color:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+.app{max-width:760px;margin:auto;padding-bottom:92px}.top{padding:22px 18px 12px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#090d18eF;backdrop-filter:blur(14px);z-index:5}
+.logo{display:flex;align-items:center;gap:10px}.logoIcon{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#7c3aed,#06b6d4);display:grid;place-items:center;font-size:23px}.logo b{font-size:20px}.muted{color:#94a3b8;font-size:13px}
+main{padding:10px 16px}.hero{padding:16px 2px}.hero h1{font-size:30px;margin:3px 0 7px}.hero p{color:#94a3b8;margin:0}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.stat,.card{background:#111827;border:1px solid #24314b;border-radius:16px;padding:14px}.stat b{font-size:21px;display:block}.stat span{font-size:12px;color:#94a3b8}
+.section{margin-top:24px}.section h2{font-size:19px;margin:0 0 11px}.progress{height:10px;background:#202b40;border-radius:99px;overflow:hidden}.bar{height:100%;width:0;background:linear-gradient(90deg,#7c3aed,#06b6d4);transition:.3s}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.exercise{cursor:pointer}.exercise b{display:block;margin-bottom:6px}.tag{display:inline-block;font-size:11px;padding:4px 7px;border-radius:8px;background:#202b40;color:#b8c4dc}
+button{border:0;border-radius:12px;padding:11px 14px;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;font-weight:700;cursor:pointer}.secondary{background:#202b40}
+.tabs{position:fixed;bottom:0;left:0;right:0;background:#0b101cee;border-top:1px solid #26334b;display:flex;justify-content:center;z-index:10}.tabs button{background:transparent;border-radius:0;color:#94a3b8;flex:1;max-width:150px;padding:12px 4px;font-size:11px}.tabs button.active{color:#fff}
+.page{display:none}.page.active{display:block}.modal{display:none;position:fixed;inset:0;background:#0009;z-index:20;padding:20px;align-items:end}.modalBox{background:#111827;border:1px solid #34415d;border-radius:22px;padding:20px;width:min(600px,100%);margin:auto}.modal.show{display:flex}
+.timer{text-align:center;font-size:54px;font-weight:800;margin:18px 0}.row{display:flex;gap:8px;flex-wrap:wrap}.log{border-left:3px solid #7c3aed;padding:9px 12px;background:#111827;margin:8px 0;border-radius:8px}
+input,textarea,select{width:100%;padding:12px;border-radius:11px;border:1px solid #34415d;background:#0c1322;color:#fff;margin:6px 0 10px}textarea{min-height:80px;resize:vertical}
+.badge{padding:12px;border-radius:14px;background:#111827;border:1px solid #24314b}.locked{opacity:.42}
+@media(max-width:420px){.stats{grid-template-columns:1fr 1fr 1fr}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top"><div class="logo"><div class="logoIcon">🤸</div><div><b>Gymzeau</b><div class="muted">Ton suivi de gymnastique</div></div></div><div id="xpTop">0 XP</div></header>
+
+<main>
+<section id="home" class="page active">
+<div class="hero"><h1>Salut, gymnaste 👋</h1><p>Progresse à ton rythme et garde une trace de tes entraînements.</p></div>
+<div class="stats"><div class="stat"><b id="xp">0</b><span>XP</span></div><div class="stat"><b id="level">1</b><span>Niveau</span></div><div class="stat"><b id="streak">0</b><span>Jours</span></div></div>
+
+<div class="section"><h2>🎯 Objectif actuel</h2><div class="card"><b id="goalName">ATR — tenir 10 secondes</b><p class="muted">Progression : <span id="goalPct">0%</span></p><div class="progress"><div class="bar" id="goalBar"></div></div><br><button onclick="addProgress()">+ Progrès</button></div></div>
+
+<div class="section"><h2>🔥 Défi du jour</h2><div class="card"><b>Défi : 5 minutes de mobilité</b><p class="muted">Termine une courte séance de mobilité.</p><button onclick="completeChallenge()">Valider le défi +50 XP</button></div></div>
+
+<div class="section"><h2>🤸 Figures</h2><div class="grid" id="homeExercises"></div></div>
+</section>
+
+<section id="figures" class="page"><div class="hero"><h1>🤸 Mes figures</h1><p class="muted">Suis ce que tu apprends.</p></div><div class="grid" id="allExercises"></div></section>
+
+<section id="training" class="page"><div class="hero"><h1>⏱️ Entraînement</h1><p class="muted">Chronomètre tes exercices.</p></div>
+<div class="card"><select id="timerSelect"><option value="30">Gainage — 30 s</option><option value="45">ATR contre un mur — 45 s</option><option value="60">Mobilité — 60 s</option><option value="90">Équilibre — 90 s</option></select><div class="timer" id="timer">00:30</div><div class="row"><button onclick="startTimer()">▶ Démarrer</button><button class="secondary" onclick="resetTimer()">↺ Reset</button></div></div>
+<div class="section"><h2>📝 Ajouter une séance</h2><div class="card"><input id="sessionTitle" placeholder="Ex : séance du mercredi"><textarea id="sessionNote" placeholder="Ce que tu as travaillé..."></textarea><button onclick="saveSession()">Enregistrer la séance</button></div></div>
+<div class="section"><h2>📚 Mon carnet</h2><div id="logs"></div></div></section>
+
+<section id="badges" class="page"><div class="hero"><h1>🏆 Badges</h1><p class="muted">Débloque des récompenses en t'entraînant.</p></div><div class="grid" id="badgesList"></div></section>
+</main>
+
+<nav class="tabs"><button class="active" onclick="showPage('home',this)">🏠<br>Accueil</button><button onclick="showPage('figures',this)">🤸<br>Figures</button><button onclick="showPage('training',this)">⏱️<br>Training</button><button onclick="showPage('badges',this)">🏆<br>Badges</button></nav>
+</div>
+
+<div class="modal" id="modal"><div class="modalBox"><h2 id="modalTitle"></h2><p id="modalText" class="muted"></p><div class="row"><button onclick="markFigure()">✓ Figure travaillée</button><button class="secondary" onclick="closeModal()">Fermer</button></div></div></div>
+
+<script>
+const exercises=[
+{name:"ATR",icon:"🤸",desc:"Équilibre sur les mains",cat:"Équilibre"},
+{name:"Roue",icon:"↪️",desc:"Passage latéral",cat:"Acrobatique"},
+{name:"Rondade",icon:"🔄",desc:"Réception dynamique",cat:"Acrobatique"},
+{name:"Pont",icon:"🌉",desc:"Souplesse du dos",cat:"Souplesse"},
+{name:"Équilibre",icon:"🧍",desc:"Tenir une position stable",cat:"Équilibre"},
+{name:"Saut",icon:"⭐",desc:"Travail de détente",cat:"Sauts"}
+];
+let state=JSON.parse(localStorage.getItem("gymzeau")||'{"xp":0,"progress":0,"streak":0,"done":[],"logs":[],"challenge":false}');
+let current=null, timer=null, seconds=30;
+
+function save(){localStorage.setItem("gymzeau",JSON.stringify(state));update()}
+function update(){
+document.getElementById("xp").textContent=state.xp;document.getElementById("xpTop").textContent=state.xp+" XP";document.getElementById("level").textContent=Math.floor(state.xp/100)+1;document.getElementById("streak").textContent=state.streak;
+let p=Math.min(100,state.progress);document.getElementById("goalPct").textContent=p+"%";document.getElementById("goalBar").style.width=p+"%";
+renderFigures();renderBadges();renderLogs();
+}
+function card(e){
+return `<div class="card exercise" onclick="openFigure('${e.name}')"><b>${e.icon} ${e.name}</b><span class="tag">${e.cat}</span><p class="muted">${e.desc}</p>${state.done.includes(e.name)?'<span>✅ Travaillée</span>':''}</div>`
+}
+function renderFigures(){document.getElementById("homeExercises").innerHTML=exercises.slice(0,4).map(card).join("");document.getElementById("allExercises").innerHTML=exercises.map(card).join("")}
+function openFigure(n){current=n;let e=exercises.find(x=>x.name===n);document.getElementById("modalTitle").textContent=e.icon+" "+e.name;document.getElementById("modalText").textContent=e.desc+". Travaille toujours avec un encadrement adapté et sur une surface sûre.";document.getElementById("modal").classList.add("show")}
+function closeModal(){document.getElementById("modal").classList.remove("show")}
+function markFigure(){if(!state.done.includes(current)){state.done.push(current);state.xp+=25;state.progress=Math.min(100,state.progress+10);save()}closeModal()}
+function addProgress(){state.progress=Math.min(100,state.progress+10);state.xp+=10;save()}
+function completeChallenge(){if(!state.challenge){state.challenge=true;state.xp+=50;state.streak++;save();alert("🔥 Défi terminé ! +50 XP")}else alert("Défi déjà validé aujourd'hui !")}
+function showPage(id,btn){document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".tabs button").forEach(x=>x.classList.remove("active"));btn.classList.add("active");window.scrollTo(0,0)}
+function resetTimer(){clearInterval(timer);seconds=Number(document.getElementById("timerSelect").value);displayTimer()}
+function displayTimer(){document.getElementById("timer").textContent=String(Math.floor(seconds/60)).padStart(2,"0")+":"+String(seconds%60).padStart(2,"0")}
+function startTimer(){clearInterval(timer);timer=setInterval(()=>{seconds--;displayTimer();if(seconds<=0){clearInterval(timer);state.xp+=20;save();alert("⏱️ Terminé ! +20 XP");resetTimer()}},1000)}
+function saveSession(){let t=document.getElementById("sessionTitle").value.trim()||"Séance";let n=document.getElementById("sessionNote").value.trim();state.logs.unshift({t,n,d:new Date().toLocaleDateString("fr-FR")});state.xp+=30;save();document.getElementById("sessionTitle").value="";document.getElementById("sessionNote").value="";alert("✅ Séance enregistrée ! +30 XP")}
+function renderLogs(){let x=document.getElementById("logs");x.innerHTML=state.logs.length?state.logs.map(l=>`<div class="log"><b>${l.t}</b><br><span class="muted">${l.d} — ${l.n||"Pas de note"}</span></div>`).join(""):'<p class="muted">Aucune séance pour le moment.</p>'}
+function renderBadges(){let b=[["🌱","Premier pas",state.xp>=10],["🤸","Gymnaste actif",state.done.length>=2],["🔥","Défi relevé",state.challenge],["⭐","100 XP",state.xp>=100],["🏆","Collectionneur",state.done.length>=6],["🚀","500 XP",state.xp>=500]];document.getElementById("badgesList").innerHTML=b.map(x=>`<div class="badge ${x[2]?'':'locked'}"><b>${x[0]} ${x[1]}</b><p class="muted">${x[2]?'Débloqué !':'Continue à t’entraîner'}</p></div>`).join("")}
+document.getElementById("timerSelect").onchange=resetTimer;resetTimer();update();
+</script>
+</body></html>
