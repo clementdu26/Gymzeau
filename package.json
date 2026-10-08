@@ -1,0 +1,13 @@
+{
+  "name": "gymzeau",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "echo GYMZEAU"
+  },
+  "dependencies": {
+    "@capacitor/core": "^7.4.3",
+    "@capacitor/ios": "^7.4.3",
+    "@capacitor/cli": "^7.4.3"
+  }
+}
